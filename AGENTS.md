@@ -9,7 +9,7 @@ et surtout **ce qu'il ne faut pas casser**.
 CoastSentinel — système d'alerte côtière multi-échelle. Backend Python
 (FastAPI) qui porte la science, frontend React/deck.gl qui la rend
 manipulable. Contexte : thèse sur la modélisation topo-bathymétrique et
-hydrodynamique sédimentaire du littoral d'Agadir, Maroc.
+hydrodynamique sédimentaire du littoral.
 
 ```
 backend/coastsentinel/   moteur scientifique + API      (Python 3.11+)
