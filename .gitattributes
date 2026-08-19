@@ -1,0 +1,26 @@
+# Normalisation des fins de ligne.
+#
+# Sans ce fichier, Git convertit les fichiers en CRLF sur Windows — y compris
+# demarrer.sh, qui devient alors inutilisable sur Linux et macOS : le shell
+# lit le retour chariot comme une partie du chemin de l'interpréteur et
+# répond « bad interpreter ». Même piège pour les Dockerfile, dont les images
+# se construisent sur des runners Linux.
+
+* text=auto
+
+# Doivent rester en LF, quelle que soit la machine
+*.sh        text eol=lf
+Dockerfile  text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+nginx.conf  text eol=lf
+
+# Doivent rester en CRLF : cmd.exe ne gère pas les scripts en LF
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+
+# Binaires — jamais de conversion
+*.png       binary
+*.jpg       binary
+*.pdf       binary
+*.zip       binary
