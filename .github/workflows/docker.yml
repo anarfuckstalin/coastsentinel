@@ -1,0 +1,69 @@
+name: Images Docker
+
+# Publie deux images sur GitHub Container Registry a chaque commit sur main
+# et a chaque tag de version. Aucun secret a configurer : GITHUB_TOKEN suffit
+# des lors que le job declare `packages: write`.
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  images:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - nom: backend
+            contexte: ./backend
+          - nom: frontend
+            contexte: ./frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Le nom du depot peut contenir des majuscules ; une reference d'image
+      # doit etre entierement en minuscules, sans quoi le push echoue.
+      - name: Nom d'image en minuscules
+        id: nom
+        run: echo "image=${REGISTRY}/${GITHUB_REPOSITORY,,}-${{ matrix.nom }}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Etiquettes et metadonnees
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.nom.outputs.image }}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,format=short
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Construction et publication
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.contexte }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

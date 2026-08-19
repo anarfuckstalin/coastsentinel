@@ -1,0 +1,178 @@
+@import "tailwindcss";
+@import "maplibre-gl/dist/maplibre-gl.css";
+
+/* ===================================================================
+   Jetons de design
+   -------------------------------------------------------------------
+   Palette validée : bande de clarté, plancher de chroma, séparation
+   pour les daltonismes protan/deutan, contraste sur la surface.
+   Les couleurs de statut sont réservées aux niveaux d'alerte et ne
+   servent jamais de couleur de série.
+   =================================================================== */
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", monospace;
+
+  /* séries catégorielles — ordre fixe, jamais recyclé */
+  --color-serie-1: #2a78d6;
+  --color-serie-2: #eb6834;
+  --color-serie-3: #1baf7a;
+  --color-serie-4: #eda100;
+
+  /* statut — réservé */
+  --color-vert: #0ca30c;
+  --color-jaune: #fab219;
+  --color-orange: #ec835a;
+  --color-rouge: #d03b3b;
+
+  /* rampe séquentielle bleue, 100 → 700 */
+  --color-seq-100: #cde2fb;
+  --color-seq-250: #86b6ef;
+  --color-seq-400: #3987e5;
+  --color-seq-550: #1c5cab;
+  --color-seq-700: #0d366b;
+}
+
+:root {
+  --surface-1: #fcfcfb;
+  --surface-2: #f4f4f1;
+  --plane: #f9f9f7;
+  --ink-1: #0b0b0b;
+  --ink-2: #52514e;
+  --ink-3: #898781;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.1);
+  --serie-1: #2a78d6;
+  --serie-2: #eb6834;
+  --serie-3: #1baf7a;
+  color-scheme: light;
+}
+
+.dark {
+  --surface-1: #1a1a19;
+  --surface-2: #232322;
+  --plane: #0d0d0d;
+  --ink-1: #ffffff;
+  --ink-2: #c3c2b7;
+  --ink-3: #898781;
+  --grid: #2c2c2a;
+  --axis: #383835;
+  --border: rgba(255, 255, 255, 0.1);
+  --serie-1: #3987e5;
+  --serie-2: #d95926;
+  --serie-3: #199e70;
+  color-scheme: dark;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    margin: 0;
+    background: var(--plane);
+    color: var(--ink-1);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  ::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--axis);
+    border-radius: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@layer components {
+  .card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .field {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 9px;
+    font-size: 13px;
+    color: var(--ink-1);
+    outline: none;
+  }
+  .field:focus {
+    border-color: var(--serie-1);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--serie-1) 22%, transparent);
+  }
+  .lbl {
+    font-size: 11px;
+    color: var(--ink-2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+  .btn {
+    font-size: 13px;
+    padding: 8px 13px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink-1);
+    cursor: pointer;
+    transition: border-color 0.12s, background 0.12s;
+  }
+  .btn:hover:not(:disabled) {
+    border-color: var(--ink-3);
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .btn-primary {
+    background: var(--serie-1);
+    border-color: var(--serie-1);
+    color: #fff;
+    font-weight: 600;
+  }
+  .btn-primary:hover:not(:disabled) {
+    filter: brightness(1.08);
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* MapLibre : neutraliser le style par défaut des contrôles */
+.maplibregl-ctrl-group {
+  background: var(--surface-1) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: none !important;
+}
+.maplibregl-ctrl-group button + button {
+  border-top-color: var(--border) !important;
+}
+.maplibregl-ctrl-attrib {
+  font-size: 10px !important;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 55%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 11px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+.pulse {
+  animation: pulse-ring 2s cubic-bezier(0.66, 0, 0, 1) infinite;
+}

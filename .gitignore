@@ -1,0 +1,40 @@
+# dépendances et artefacts de build
+node_modules/
+dist/
+build/
+*.egg-info/
+.vite/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.coverage
+htmlcov/
+
+# archives et sorties de travail
+*.zip
+*.png
+*.geojson
+*.tif
+era5_*.csv
+hindcast_*.csv
+
+# secrets et configuration locale
+.env
+.env.*
+!.env.example
+
+# systèmes et éditeurs
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+*.swp
+
+# artefacts TypeScript
+*.tsbuildinfo

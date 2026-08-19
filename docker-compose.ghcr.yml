@@ -1,0 +1,30 @@
+# Déploiement depuis les images publiées — aucune compilation locale.
+#
+#   COASTSENTINEL_IMAGE=ghcr.io/<votre-compte>/coastsentinel \
+#   docker compose -f docker-compose.ghcr.yml up -d
+#
+# Les deux images sont construites et publiées par .github/workflows/docker.yml
+# à chaque commit sur main. Le tag `latest` suit main ; les tags `v1.0.0`,
+# `1.0` et le sha court permettent d'épingler une version précise.
+
+services:
+  backend:
+    image: ${COASTSENTINEL_IMAGE:-ghcr.io/votre-compte/coastsentinel}-backend:${COASTSENTINEL_TAG:-latest}
+    environment:
+      LOG_LEVEL: INFO
+      CACHE_TTL: "900"
+      # Origines autorisées : ajoutez ici le domaine public s'il y en a un.
+      CORS_ORIGINS: "http://localhost,http://localhost:8080"
+    restart: unless-stopped
+    # L'API n'a pas besoin d'être exposée : nginx la joint par le réseau
+    # interne. Décommentez pour l'atteindre directement (débogage, /api/docs).
+    # ports:
+    #   - "8000:8000"
+
+  frontend:
+    image: ${COASTSENTINEL_IMAGE:-ghcr.io/votre-compte/coastsentinel}-frontend:${COASTSENTINEL_TAG:-latest}
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+    restart: unless-stopped

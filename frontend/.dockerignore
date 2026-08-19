@@ -1,0 +1,9 @@
+# Le contexte de build est ce dossier : un .dockerignore à la racine du dépôt
+# ne s'y applique pas. Sans ce fichier, node_modules (plusieurs centaines de
+# Mo) est transféré au démon puis écrase l'installation faite par `npm ci`.
+node_modules
+dist
+.vite
+*.tsbuildinfo
+Dockerfile
+.dockerignore

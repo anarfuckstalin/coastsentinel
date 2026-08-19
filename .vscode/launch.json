@@ -1,0 +1,41 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "API — déboguer FastAPI",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["coastsentinel.api:app", "--reload", "--port", "8000"],
+      "cwd": "${workspaceFolder}/backend",
+      "jinja": false,
+      "justMyCode": false,
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Web — déboguer dans le navigateur",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/frontend/src",
+      "sourceMaps": true
+    },
+    {
+      "name": "Analyse en ligne de commande (démo)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "coastsentinel.cli",
+      "args": ["analyse", "--source", "demo"],
+      "cwd": "${workspaceFolder}/backend",
+      "console": "integratedTerminal"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "▶ Application complète (API + Web)",
+      "configurations": ["API — déboguer FastAPI", "Web — déboguer dans le navigateur"],
+      "preLaunchTask": "Web — Vite (rechargement auto)",
+      "stopAll": true
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "0 · Installer les dépendances",
+      "detail": "Environnement Python + paquets npm (à faire une seule fois)",
+      "type": "shell",
+      "command": "python -m venv backend/.venv && ${command:python.interpreterPath} -m pip install -e backend[science,dev] && cd frontend && npm install --no-audit --no-fund",
+      "windows": {
+        "command": "if not exist backend\\.venv (python -m venv backend\\.venv) && backend\\.venv\\Scripts\\python.exe -m pip install -e backend[science,dev] && cd frontend && npm install --no-audit --no-fund"
+      },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      "label": "API — FastAPI (rechargement auto)",
+      "detail": "http://localhost:8000/api/docs",
+      "type": "shell",
+      "command": "backend/.venv/bin/python -m uvicorn coastsentinel.api:app --app-dir backend --reload --port 8000",
+      "windows": {
+        "command": "backend\\.venv\\Scripts\\python.exe -m uvicorn coastsentinel.api:app --app-dir backend --reload --port 8000"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": [{ "regexp": "^$", "file": 1, "location": 2, "message": 3 }],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*Started reloader.*",
+          "endsPattern": ".*Application startup complete.*"
+        }
+      },
+      "presentation": { "group": "coastsentinel", "panel": "dedicated" }
+    },
+    {
+      "label": "Web — Vite (rechargement auto)",
+      "detail": "http://localhost:5173",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": { "cwd": "${workspaceFolder}/frontend" },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": [{ "regexp": "^$", "file": 1, "location": 2, "message": 3 }],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*VITE.*",
+          "endsPattern": ".*ready in.*"
+        }
+      },
+      "presentation": { "group": "coastsentinel", "panel": "dedicated" }
+    },
+    {
+      "label": "▶ Tout démarrer",
+      "detail": "API + interface web, en parallèle",
+      "dependsOn": ["API — FastAPI (rechargement auto)", "Web — Vite (rechargement auto)"],
+      "dependsOrder": "parallel",
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "Tests — backend (pytest)",
+      "type": "shell",
+      "command": "backend/.venv/bin/python -m pytest backend -q",
+      "windows": { "command": "backend\\.venv\\Scripts\\python.exe -m pytest backend -q" },
+      "group": { "kind": "test", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "Tests — outils scientifiques",
+      "detail": "validation.py et m3_shoreline.py",
+      "type": "shell",
+      "command": "backend/.venv/bin/python backend/tools/validation.py && backend/.venv/bin/python backend/tools/m3_shoreline.py",
+      "windows": {
+        "command": "backend\\.venv\\Scripts\\python.exe backend\\tools\\validation.py && backend\\.venv\\Scripts\\python.exe backend\\tools\\m3_shoreline.py"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Qualité — ruff + typescript",
+      "type": "shell",
+      "command": "backend/.venv/bin/python -m ruff check backend && cd frontend && npx tsc -b",
+      "windows": {
+        "command": "backend\\.venv\\Scripts\\python.exe -m ruff check backend && cd frontend && npx tsc -b"
+      },
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "Build — frontend (production)",
+      "type": "shell",
+      "command": "npm run build",
+      "options": { "cwd": "${workspaceFolder}/frontend" },
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "Docker — compose up",
+      "detail": "Pile complète : http://localhost:8080",
+      "type": "shell",
+      "command": "docker compose up --build",
+      "problemMatcher": [],
+      "presentation": { "panel": "dedicated" }
+    }
+  ]
+}

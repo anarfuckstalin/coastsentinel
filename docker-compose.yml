@@ -1,0 +1,21 @@
+# CoastSentinel — pile complète en une commande :  docker compose up
+services:
+  backend:
+    build: ./backend
+    image: coastsentinel-backend:1.0.0
+    environment:
+      LOG_LEVEL: INFO
+      CACHE_TTL: "900"
+      CORS_ORIGINS: "http://localhost,http://localhost:5173,http://localhost:8080"
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    image: coastsentinel-frontend:1.0.0
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+    restart: unless-stopped

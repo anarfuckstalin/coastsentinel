@@ -1,0 +1,53 @@
+cff-version: 1.2.0
+title: "CoastSentinel — Système d'Alerte Côtière Multi-échelle"
+message: "Si vous utilisez ce logiciel, merci de le citer comme ci-dessous."
+type: software
+authors:
+  - family-names: Bouhadi
+    given-names: Amine
+    affiliation: "Université Abdelmalek Essaâdi, Maroc"
+    email: amine.bouhadi@etu.uae.ac.ma
+abstract: >-
+  Système d'alerte côtière multi-aléas fondé sur des données ouvertes à
+  crédibilité scientifique internationale et transposable à tout littoral.
+  Les seuils sont relatifs — percentiles de la climatologie locale
+  reconstruite en tout point — et non des valeurs absolues, ce qui rend le
+  dispositif applicable partout où une réanalyse existe. L'état morphologique
+  lent abaisse le seuil événementiel : le couplage des échelles constitue le
+  cœur de l'alerte. Prototype de recherche associé à une thèse sur la
+  modélisation topo-bathymétrique et hydrodynamique sédimentaire du littoral
+  d'Agadir, Maroc.
+keywords:
+  - submersion côtière
+  - érosion littorale
+  - jet de rive
+  - système d'alerte
+  - données ouvertes
+  - Agadir
+license: MIT
+version: 1.0.0
+references:
+  - type: article
+    authors:
+      - family-names: Stockdon
+        given-names: Hilary F.
+      - family-names: Holman
+        given-names: Rob A.
+      - family-names: Howd
+        given-names: Peter A.
+      - family-names: Sallenger
+        given-names: Asbury H.
+    title: "Empirical parameterization of setup, swash, and runup"
+    journal: "Coastal Engineering"
+    volume: 53
+    issue: 7
+    year: 2006
+  - type: article
+    authors:
+      - family-names: Sallenger
+        given-names: Asbury H.
+    title: "Storm impact scale for barrier islands"
+    journal: "Journal of Coastal Research"
+    volume: 16
+    issue: 3
+    year: 2000
