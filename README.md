@@ -4,10 +4,6 @@
 données ouvertes à crédibilité scientifique internationale, transposable à
 n'importe quel littoral du monde.
 
-Prototype de recherche associé à la thèse *« Modélisation topo-bathymétrique et
-hydrodynamique sédimentaire : étude multi-approches sous différentes échelles
-spatio-temporelles ; cas du littoral d'Agadir, Maroc »*.
-
 ---
 
 ## Ce que c'est
