@@ -2,7 +2,7 @@
 
 ### Note de conception scientifique et technique
 
-**Contexte de recherche** — *Modélisation topo-bathymétrique et hydrodynamique sédimentaire : étude multi-approches sous différentes échelles spatio-temporelles ; cas du littoral d'Agadir, Maroc*
+**Contexte de recherche** — *Modélisation topo-bathymétrique et hydrodynamique sédimentaire*
 
 **Auteur** — Amine Bouhadi, Université Abdelmalek Essaâdi
 **Version** — 0.1 (document de conception, août 2026)
