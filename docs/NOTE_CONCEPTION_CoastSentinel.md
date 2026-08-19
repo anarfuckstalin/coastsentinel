@@ -16,7 +16,7 @@
 
 Les littoraux concentrent aujourd'hui l'essentiel de l'exposition humaine aux aléas hydro-sédimentaires : submersion de tempête, érosion chronique, houle dangereuse, ensablement des ouvrages portuaires. Or les systèmes d'alerte côtière opérationnels présentent trois biais structurels :
 
-1. **Un biais géographique.** Les systèmes matures (NOAA/CO-OPS aux États-Unis, ECFAS/CEMS en Europe, BOM en Australie) couvrent des pays à haut revenu. La majorité des littoraux africains, sud-américains et insulaires ne dispose d'aucun service d'alerte côtière opérationnel, alors que ce sont eux qui cumulent forte exposition et faible capacité d'adaptation.
+1. **Un biais géographique.** Les systèmes matures (NOAA/CO-OPS aux États-Unis, CEMS en Europe — ECFAS n'ayant été qu'un projet de recherche H2020 achevé en 2022 —, BOM en Australie) couvrent des pays à haut revenu. La majorité des littoraux africains, sud-américains et insulaires ne dispose d'aucun service d'alerte côtière opérationnel, alors que ce sont eux qui cumulent forte exposition et faible capacité d'adaptation.
 2. **Un biais d'échelle.** Les systèmes existants traitent presque exclusivement l'événementiel (l'horizon J+3 à J+5). L'érosion chronique et l'évolution bathymétrique — qui opèrent au pas saisonnier à décennal — ne déclenchent aucune alerte, alors qu'elles conditionnent la vulnérabilité de l'événement suivant : une plage qui a perdu 15 m en trois ans subit une tempête décennale comme une tempête centennale.
 3. **Un biais de calibration.** Les seuils d'alerte sont presque toujours absolus (« alerte si Hs > 4 m »), donc non transposables. Un Hs de 4 m est un régime hivernal ordinaire à Agadir et un événement extrême dans le golfe de Gabès.
 
@@ -49,6 +49,7 @@ Le système s'organise en quatre modules, chacun opérant à une échelle spatio
 ### 2.1 Schéma de flux
 
 ```
+
                     ┌──────────────────── SOURCES OUVERTES ────────────────────┐
                     │                                                          │
   CMEMS WAV/PHY ────┤  Hs, Tp, Dir, zos, courants (prévision J+5, 3 h)         │
@@ -98,11 +99,11 @@ Le critère de sélection est explicite : **toute source retenue doit être (a) 
 
 | Source | Produit / identifiant | Couverture | Résolution | Statut |
 |---|---|---|---|---|
-| **Copernicus Marine (CMEMS)** | `GLOBAL_ANALYSISFORECAST_WAV_001_027` | Mondiale | 1/12°, 3 h, J+5 | Opérationnel, validé QUID |
+| **Copernicus Marine (CMEMS)** | `GLOBAL_ANALYSISFORECAST_WAV_001_027` | Mondiale | 1/12°, horaire, prévision 10 j | Opérationnel, validé QUID |
 | **Copernicus Marine** | `GLOBAL_ANALYSISFORECAST_PHY_001_024` (zos, uo, vo) | Mondiale | 1/12°, horaire | Opérationnel |
 | **Copernicus Marine** | `GLOBAL_MULTIYEAR_WAV_001_032` (réanalyse vagues) | Mondiale | 1/5°, 1980– | Réanalyse |
-| **ECMWF / C3S** | ERA5 (`swh`, `mwp`, `mwd`, `msl`, `u10`, `v10`) | Mondiale | 0,5° (vagues), horaire, 1940– | Réanalyse de référence |
-| **NOAA NCEP** | WAVEWATCH III / GFS (NOMADS) | Mondiale | 0,16°, 3 h | Opérationnel, sans clé |
+| **ECMWF / C3S** | ERA5 (`swh`, `mwp`, `mwd`, `msl`, `u10`, `v10`) | Mondiale | 0,36° (vagues, ~40 km) ; 0,28° (atmosphère), horaire, 1940– | Réanalyse de référence |
+| **NOAA NCEP** | GFS-Wave / WAVEWATCH III (NOMADS) | Mondiale | 0,25°, 3 h | Opérationnel, sans clé |
 | **AVISO+ / LEGOS** | FES2022 (atlas de marée) | Mondiale | 1/16° | Référence marée |
 | **UNESCO-COI** | Sea Level Station Monitoring Facility | ~950 stations | 1 min | Temps réel |
 | **GLOSS / PSMSL / UHSLC / GESLA-3** | Marégraphes historiques | Mondiale | horaire–mensuel | Référence validation |
@@ -140,25 +141,31 @@ Le critère de sélection est explicite : **toute source retenue doit être (a) 
 
 Le niveau d'eau total instantané au rivage se décompose en :
 
-$$ \mathrm{TWL}(t) = \underbrace{\eta_{\text{marée}}(t)}_{\text{astronomique}} + \underbrace{\eta_{\text{surcote}}(t)}_{\text{météorologique}} + \underbrace{R_{2\%}(t)}_{\text{jet de rive}} + \underbrace{\eta_{\text{MSL}}}_{\text{tendance eustatique}} $$
+```math
+\mathrm{TWL}(t) = \underbrace{\eta_{\text{marée}}(t)}_{\text{astronomique}} + \underbrace{\eta_{\text{surcote}}(t)}_{\text{météorologique}} + \underbrace{R_{2\%}(t)}_{\text{jet de rive}} + \underbrace{\eta_{\text{MSL}}}_{\text{tendance eustatique}}
+```
 
 **Jet de rive — paramétrisation de Stockdon et al. (2006)**, référence la plus largement validée pour les plages sableuses ouvertes :
 
-Longueur d'onde au large : $L_0 = \dfrac{g T_p^2}{2\pi}$
+Longueur d'onde au large : $`L_0 = \dfrac{g T_p^2}{2\pi}`$
 
-Nombre d'Iribarren : $\xi_0 = \dfrac{\beta_f}{\sqrt{H_0/L_0}}$
+Nombre d'Iribarren : $`\xi_0 = \dfrac{\beta_f}{\sqrt{H_0/L_0}}`$
 
-Régime intermédiaire à réfléchissant ($\xi_0 \geq 0{,}3$) :
+Régime intermédiaire à réfléchissant ($`\xi_0 \geq 0{,}3`$) :
 
-$$ R_{2\%} = 1{,}1 \left[ 0{,}35\,\beta_f \sqrt{H_0 L_0} \;+\; \frac{\sqrt{H_0 L_0 \left(0{,}563\,\beta_f^2 + 0{,}004\right)}}{2} \right] $$
+```math
+R_{2\%} = 1{,}1 \left[ 0{,}35\,\beta_f \sqrt{H_0 L_0} \;+\; \frac{\sqrt{H_0 L_0 \left(0{,}563\,\beta_f^2 + 0{,}004\right)}}{2} \right]
+```
 
-où le premier terme est le *setup* $\langle\eta\rangle$ et le second la demi-amplitude du *swash* $S/2$.
+où le premier terme est le *setup* $`\langle\eta\rangle`$ et le second la demi-amplitude du *swash* $`S/2`$.
 
-Régime dissipatif ($\xi_0 < 0{,}3$) :
+Régime dissipatif ($`\xi_0 < 0{,}3`$) :
 
-$$ R_{2\%} = 0{,}043 \sqrt{H_0 L_0} $$
+```math
+R_{2\%} = 0{,}043 \sqrt{H_0 L_0}
+```
 
-**Paramètre critique : $\beta_f$**, la pente de l'estran. C'est la principale source d'incertitude en déploiement mondial. Stratégie en cascade :
+**Paramètre critique : $`\beta_f`$**, la pente de l'estran. C'est la principale source d'incertitude en déploiement mondial. Stratégie en cascade :
 1. Mesure locale (levé DGPS/drone) — cas d'Agadir ;
 2. Extraction depuis Copernicus DEM GLO-30 + SDB ;
 3. Défaut mondial : Athanasiou et al. (2019) ;
@@ -168,54 +175,64 @@ $$ R_{2\%} = 0{,}043 \sqrt{H_0 L_0} $$
 
 | Régime | Condition | Signification |
 |---|---|---|
-| *Swash* | $R_{high} < D_{low}$ | Jet de rive confiné à l'estran |
-| *Collision* | $D_{low} \le R_{high} < D_{high}$ | Attaque du pied de dune / berme → érosion |
-| *Overwash* | $R_{high} \ge D_{high}$ | Franchissement, transport vers l'arrière-plage |
-| *Inundation* | $R_{low} \ge D_{high}$ | Submersion continue |
+| *Swash* | $`R_{high} < D_{low}`$ | Jet de rive confiné à l'estran |
+| *Collision* | $`D_{low} \le R_{high} < D_{high}`$ | Attaque du pied de dune / berme → érosion |
+| *Overwash* | $`R_{high} \ge D_{high}`$ | Franchissement, transport vers l'arrière-plage |
+| *Inundation* | $`R_{low} \ge D_{high}`$ | Submersion continue |
 
-avec $R_{high} = \eta_{\text{marée}} + \eta_{\text{surcote}} + R_{2\%}$, $D_{low}$ le pied de dune/berme et $D_{high}$ la crête (extraits du MNT).
+avec $`R_{high} = \eta_{\text{marée}} + \eta_{\text{surcote}} + R_{2\%}`$ le niveau atteint par le jet de rive, $`R_{low} = \eta_{\text{marée}} + \eta_{\text{surcote}}`$ le niveau d'eau statique (sans jet de rive), $`D_{low}`$ le pied de dune/berme et $`D_{high}`$ la crête (extraits du MNT).
 
 ### 4.2 Module M2 — Houle dangereuse
 
 Flux d'énergie de la houle (puissance par mètre de crête, eau profonde) :
 
-$$ P = \frac{\rho g^2}{64\pi} H_s^2 T_e \quad [\mathrm{W\,m^{-1}}] $$
+```math
+P = \frac{\rho g^2}{64\pi} H_s^2 T_e \quad [\mathrm{W\,m^{-1}}]
+```
 
-Indice de puissance de tempête (Dolan & Davis, 1992) : $\;SPI = H_s^2 \cdot D\;$ avec $D$ la durée en heures au-dessus du seuil, permettant de classer les tempêtes en cinq classes.
+où $`T_e`$ est la période énergétique. Les produits de vagues (ERA5 `mwp`, CMEMS) fournissant la période pic $`T_p`$, on applique la conversion usuelle $`T_e \approx 0{,}9\,T_p`$ (spectre JONSWAP) ; l'omettre surestime $`P`$ d'environ 11 %.
+
+Indice de puissance de tempête (Dolan & Davis, 1992) : $`\;SPI = H_s^2 \cdot D\;`$ avec $`D`$ la durée en heures au-dessus du seuil, permettant de classer les tempêtes en cinq classes.
 
 Proxy de courants d'arrachement : combinaison d'un Hs modéré-fort, d'une incidence quasi-normale et d'une morphologie à barre/baïne — indicateur qualitatif tant qu'aucune donnée morphologique haute résolution n'est disponible ; **à ne pas présenter comme une prévision déterministe**.
 
 ### 4.3 Module M3 — Érosion et trait de côte
 
-Chaîne : Sentinel-2/Landsat → indice d'eau (MNDWI/AWEI) → seuillage Otsu → contour sub-pixel → correction de marée (projection sur $\beta_f$ à un datum commun) → position le long de transects perpendiculaires.
+Chaîne : Sentinel-2/Landsat → indice d'eau (MNDWI/AWEI) → seuillage Otsu → contour sub-pixel → correction de marée (projection sur $`\beta_f`$ à un datum commun) → position le long de transects perpendiculaires.
 
 Indicateurs par transect :
-- **EPR** (End Point Rate) : $(P_{t_2} - P_{t_1})/(t_2 - t_1)$ ;
+- **EPR** (End Point Rate) : $`(P_{t_2} - P_{t_1})/(t_2 - t_1)`$ ;
 - **LRR** (Linear Regression Rate) avec intervalle de confiance à 95 % ;
-- **Position résiduelle** $\Delta P$ = écart à la tendance saisonnière ajustée → détecte l'événement érosif ;
-- **Marge de sécurité** $M = P_{\text{actuel}} - P_{\text{seuil enjeu}}$ → temps avant atteinte de l'enjeu = $M / |LRR|$.
+- **Position résiduelle** $`\Delta P`$ = écart à la tendance saisonnière ajustée → détecte l'événement érosif ;
+- **Marge de sécurité** $`M = P_{\text{actuel}} - P_{\text{seuil enjeu}}`$ → temps avant atteinte de l'enjeu = $`M / |LRR|`$.
 
-Une alerte M3 est émise si $\Delta P$ dépasse 2 écarts-types de la variabilité saisonnière, ou si le temps avant atteinte de l'enjeu passe sous 10 ans.
+Une alerte M3 est émise si $`\Delta P`$ dépasse 2 écarts-types de la variabilité saisonnière, ou si le temps avant atteinte de l'enjeu passe sous 10 ans.
 
 ### 4.4 Module M4 — Bathymétrie et budget sédimentaire
 
 Deux voies complémentaires, cohérentes avec l'approche « multi-approches » de la thèse :
 
 **Voie ratio log (Stumpf et al., 2003)** — pour les eaux claires :
-$$ Z = m_1 \frac{\ln(n\,R_w(\lambda_i))}{\ln(n\,R_w(\lambda_j))} - m_0 $$
+
+```math
+Z = m_1 \frac{\ln(n\,R_w(\lambda_i))}{\ln(n\,R_w(\lambda_j))} - m_0
+```
+
 calibrée sur les points ICESat-2 ATL03 (bathymétrie photonique), ce qui **supprime le besoin d'un levé bathymétrique in situ** — condition sine qua non d'un déploiement mondial.
 
 **Voie inversion de cinématique** (S2Shores, CNES) — pour les eaux turbides où la voie optique échoue : la profondeur est déduite de la relation de dispersion à partir de la célérité des crêtes détectée sur les bandes Sentinel-2 acquises avec un léger décalage temporel. **Le littoral d'Agadir, à forte turbidité saisonnière liée aux apports du Souss, est un site d'intérêt pour comparer les deux voies** — c'est un résultat publiable en soi.
 
-Budget sédimentaire : $\;\Delta V = \int (Z_{t_2} - Z_{t_1})\,dA\;$ par cellule, avec propagation de l'incertitude verticale (LoD à 95 %) — seul un $\Delta V$ supérieur au LoD est déclaré significatif.
+Budget sédimentaire : $`\;\Delta V = \int (Z_{t_2} - Z_{t_1})\,dA\;`$ par cellule, avec propagation de l'incertitude verticale (LoD à 95 %) — seul un $`\Delta V`$ supérieur au LoD est déclaré significatif.
 
 ### 4.5 Module M5 — Couplage inter-échelles
 
 C'est l'apport scientifique central. Le seuil d'alerte événementiel est modulé par l'état morphologique lent :
 
-$$ \mathrm{TWL}_{\text{seuil,eff}} = \mathrm{TWL}_{\text{seuil,0}} \cdot \left(1 - \alpha \cdot I_{\text{érosion}}\right) $$
+```math
+\mathrm{TWL}_{\text{seuil,eff}} = \mathrm{TWL}_{\text{seuil,0}} \cdot \left(1 - \alpha \cdot I_{\text{érosion}}\right)
+```
 
-avec $I_{\text{érosion}} \in [0,1]$ un indice normalisé combinant le taux LRR, la perte de largeur de plage sur 5 ans et le déficit du budget sédimentaire, et $\alpha \approx 0{,}2$ un coefficient à calibrer sur les événements d'impact documentés.
+avec $`I_{\text{érosion}} \in [0,1]`$ un indice normalisé combinant le taux LRR, la perte de largeur de plage sur 5 ans et le déficit du budget sédimentaire, et $`\alpha \approx 0{,}2`$ un coefficient à calibrer sur les événements d'impact documentés.
 
 Interprétation : *une plage en érosion chronique déclenche l'alerte pour un événement moins intense qu'une plage stable.* Cette relation est falsifiable — elle se teste sur une base d'événements d'impact observés (§ 6).
 
@@ -236,19 +253,19 @@ Pour chaque point de grille, le système précalcule à partir d'un hindcast de 
 | **Vert** | 0 | TWL < P95 local | Swash | Veille |
 | **Jaune** | 1 | P95 ≤ TWL < P99 **ou** T ≥ 1 an | Swash / Collision | Vigilance, information baignade |
 | **Orange** | 2 | TWL ≥ P99 **ou** T ≥ 5 ans | Collision | Alerte : fermeture plages, ouvrages sensibles |
-| **Rouge** | 3 | T ≥ 20 ans **ou** régime Overwash/Inundation | Overwash / Inundation | Alerte majeure : évacuation, protection civile |
+| **Rouge** | 3 | T ≥ 25 ans **ou** régime Overwash/Inundation | Overwash / Inundation | Alerte majeure : évacuation, protection civile |
 
 Règles complémentaires :
-- **Escalade par persistance** : ≥ 12 h consécutives au niveau *n* fait passer au niveau *n+1* (l'érosion est cumulative — c'est la durée qui détruit la plage, pas le pic).
-- **Escalade par couplage M5** : si $I_{\text{érosion}} > 0{,}6$, remontée d'un niveau.
-- **Concomitance marée** : pic de houle dans un créneau de ±2 h autour d'une pleine mer de vive-eau (coefficient > 95) → remontée d'un niveau.
+- **Escalade par persistance** : ≥ 12 h consécutives à un niveau *n* ≥ 1 (Jaune ou au-dessus) fait passer au niveau *n+1* (l'érosion est cumulative — c'est la durée qui détruit la plage, pas le pic). La règle ne s'applique pas au niveau Vert.
+- **Escalade par couplage M5** : si $`I_{\text{érosion}} > 0{,}6`$, remontée d'un niveau.
+- **Concomitance marée** : pic de houle dans un créneau de ±2 h autour d'une pleine mer de vive-eau, définie comme un marnage au-delà du 90ᵉ percentile local — et non par le coefficient de marée, convention française (SHOM) sans équivalent mondial, incompatible avec le Choix n° 1.
 
 ### 5.3 Communication de l'incertitude
 
 Chaque alerte porte obligatoirement :
 - la probabilité de dépassement issue de l'ensemble (si le forçage ensembliste est disponible) ;
-- l'intervalle de confiance sur $R_{2\%}$ (l'écart-type publié de Stockdon et al. est de l'ordre de ±20 %) ;
-- le niveau de confiance sur $\beta_f$ (mesuré / dérivé MNT / mondial par défaut / générique) ;
+- l'intervalle de confiance sur $`R_{2\%}`$ (l'écart-type publié de Stockdon et al. est de l'ordre de ±20 %) ;
+- le niveau de confiance sur $`\beta_f`$ (mesuré / dérivé MNT / mondial par défaut / générique) ;
 - l'âge de la donnée morphologique M3-M4.
 
 **Une alerte sans son incertitude n'est pas un produit scientifique.**
@@ -278,7 +295,7 @@ C'est l'étape que la plupart des travaux omettent. Construction d'une base d'**
 | **Alerte émise** | VP | FP |
 | **Pas d'alerte** | FN | VN |
 
-Scores : **POD** = VP/(VP+FN), **FAR** = FP/(VP+FP), **CSI** = VP/(VP+FP+FN), **score de Peirce**, **score de Brier** et courbe **ROC** pour la version probabiliste. Le calibrage de $\alpha$ (§ 4.5) se fait par maximisation du CSI.
+Scores : **POD** = VP/(VP+FN), **FAR** = FP/(VP+FP), **CSI** = VP/(VP+FP+FN), **score de Peirce**, **score de Brier** et courbe **ROC** pour la version probabiliste. Le calibrage de $`\alpha`$ (§ 4.5) se fait par maximisation du CSI.
 
 > Objectif d'un système opérationnel : POD > 0,8 avec FAR < 0,4. Un système à FAR élevé perd la confiance des utilisateurs et cesse d'être utilisé — c'est le mode d'échec dominant des systèmes d'alerte.
 
@@ -290,7 +307,7 @@ Il est essentiel de les énoncer explicitement, dans le système comme dans la p
 
 1. **Résolution des modèles globaux.** Les grilles CMEMS/ERA5 (~8–50 km) ne résolvent ni la réfraction sur la bathymétrie de la baie d'Agadir, ni la diffraction derrière le cap Ghir, ni les ouvrages portuaires. Le TWL calculé est un **niveau d'eau au large transposé au rivage par formule empirique**, non une simulation nearshore. Palier suivant : descente d'échelle SWAN/XBeach sur la bathymétrie SDB+GEBCO+levés locaux — c'est précisément le cœur de la thèse.
 2. **Domaine de validité de Stockdon et al. (2006).** Établie sur des plages sableuses ouvertes à pente modérée. Elle est mal adaptée aux côtes rocheuses, aux plages à galets, aux récifs coralliens et aux ouvrages verticaux. Sur ces morphologies : signaler la dégradation de confiance, ou basculer sur d'autres paramétrisations (Poate et al. 2016 pour les galets, EurOtop pour les ouvrages).
-3. **Incertitude sur $\beta_f$.** À l'échelle mondiale, elle domine l'erreur sur $R_{2\%}$. C'est le point faible assumé du système.
+3. **Incertitude sur $`\beta_f`$.** À l'échelle mondiale, elle domine l'erreur sur $`R_{2\%}`$. C'est le point faible assumé du système.
 4. **Absence de surcote haute résolution.** Le `zos` global CMEMS ne résout pas la surcote en baie fermée ou en estuaire. Un couplage SCHISM/Delft3D-FM régional serait nécessaire pour un service opérationnel certifié.
 5. **SDB limitée par la turbidité et la profondeur.** La voie optique décroche typiquement au-delà de 1,5 × la profondeur de Secchi. À Agadir, les panaches turbides du Souss limiteront la voie optique en période de crue — d'où la voie inversion en secours.
 6. **Latence de M3-M4.** L'état morphologique alimentant M5 peut avoir plusieurs semaines. Le système doit afficher cet âge, jamais le masquer.
@@ -350,7 +367,7 @@ Ce positionnement rattache directement le travail à l'initiative onusienne **«
 - Parrish, C.E. et al. (2019). Validation of ICESat-2 ATLAS bathymetry. *Remote Sensing*, 11(14), 1634.
 
 **Systèmes d'alerte**
-- Revue des systèmes d'alerte précoce pour la submersion et l'érosion induites par les tempêtes sur les côtes ouvertes dominées par la houle (2025), *Natural Hazards / PMC13107362*.
+- Ferreira, O. (2026). A review of early warning systems for storm-induced coastal flooding and erosion on wave-dominated open coasts. *Cambridge Prisms: Coastal Futures*, 4, e7. https://doi.org/10.1017/cft.2026.10026
 - OASIS (2010). *Common Alerting Protocol Version 1.2*.
 
 **Données**
