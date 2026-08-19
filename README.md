@@ -78,30 +78,6 @@ premier lancement, démarre les deux serveurs et ouvre le navigateur.
 - Application : <http://localhost:5173>
 - API : <http://localhost:8000/api/docs>
 
-### Publier sur GitHub
-
-Double-cliquez **`PUBLIER.bat`**. Le script écrit le workflow de publication
-d'images, initialise le dépôt, refuse de continuer si `node_modules`, `.venv`
-ou `dist` se sont glissés dans l'index, puis pousse. Il ne demande, ne lit et
-n'enregistre aucun identifiant : l'authentification reste entre vos mains et
-celles de Git Credential Manager.
-
-Créez au préalable un dépôt **vide** sur GitHub — sans README ni licence,
-sinon les deux historiques divergent et le push est refusé.
-
-### Dans un IDE (Antigravity, VS Code, Cursor)
-
-Le dépôt embarque `.vscode/tasks.json` et `.vscode/launch.json`. Ouvrez le
-dossier, puis :
-
-- **`Ctrl+Maj+P` → « Run Task »** → *0 · Installer les dépendances* (une fois),
-  puis *▶ Tout démarrer* ;
-- ou **`Ctrl+Maj+B`**, qui lance directement *▶ Tout démarrer* ;
-- **`F5`** → *▶ Application complète* pour déboguer l'API avec points d'arrêt.
-
-`AGENTS.md` décrit le projet aux agents de l'IDE : lancement, commandes de
-vérification et règles scientifiques à ne pas casser.
-
 ### Manuellement
 
 ```bash
@@ -283,7 +259,7 @@ frontend/
     lib/field.ts     interpolation et rendu raster
     components/      carte, panneau, recherche, résultats, curseur temporel
     store.ts         état global (Zustand)
-docker-compose.yml · docker-compose.ghcr.yml · DEMARRER.bat · demarrer.sh · PUBLIER.bat
+docker-compose.yml · docker-compose.ghcr.yml · DEMARRER.bat · demarrer.sh
 .github/workflows/ci.yml · .github/workflows/docker.yml · LICENSE · CITATION.cff
 ```
 
